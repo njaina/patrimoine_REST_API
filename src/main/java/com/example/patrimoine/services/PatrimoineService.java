@@ -10,7 +10,7 @@ import java.util.Map;
 public class PatrimoineService {
 
     private static final String DATA_FOLDER =
-        "src/main/java/com/example/patrimoine/";
+        "src/main/java/com/example/patrimoine/data";
     private static final String DATA_FILE = DATA_FOLDER + "patrimoines.txt";
     private Map<Integer, PatrimoineEntity> patrimoineMap = new HashMap<>();
 
