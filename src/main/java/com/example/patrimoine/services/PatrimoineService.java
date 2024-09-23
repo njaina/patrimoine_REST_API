@@ -65,10 +65,9 @@ public class PatrimoineService {
     private void loadDataFromFile() {
         File file = new File(DATA_FILE);
         try {
-            // Si le fichier n'existe pas, créez-le
             if (!file.exists()) {
                 file.createNewFile();
-                return; // Pas de données à charger si le fichier est nouveau
+                return;
             }
 
             try (
