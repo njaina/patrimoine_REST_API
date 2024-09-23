@@ -1,6 +1,6 @@
 package com.example.patrimoine.controller;
 
-import com.example.patrimoine.entity.PatrimoineEntity;
+import com.example.patrimoine.dto.PatrimoineDTO;
 import com.example.patrimoine.services.PatrimoineService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,24 +13,24 @@ public class PatrimoineController {
     private final PatrimoineService patrimoineService = new PatrimoineService();
 
     @PutMapping("/{id}")
-    public ResponseEntity<PatrimoineEntity> createOrUpdatePatrimoine(
+    public ResponseEntity<PatrimoineDTO> createOrUpdatePatrimoine(
         @PathVariable int id,
-        @RequestBody PatrimoineEntity patrimoine
+        @RequestBody PatrimoineDTO patrimoineDTO
     ) {
-        PatrimoineEntity savedPatrimoine = patrimoineService.saveOrUpdate(
-            id,
-            patrimoine
+        patrimoineService.saveOrUpdate(id, patrimoineDTO);
+        return new ResponseEntity<>(
+            patrimoineService.findById(id),
+            HttpStatus.OK
         );
-        return new ResponseEntity<>(savedPatrimoine, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PatrimoineEntity> getPatrimoineById(
+    public ResponseEntity<PatrimoineDTO> getPatrimoineById(
         @PathVariable int id
     ) {
-        PatrimoineEntity patrimoine = patrimoineService.findById(id);
-        if (patrimoine != null) {
-            return new ResponseEntity<>(patrimoine, HttpStatus.OK);
+        PatrimoineDTO patrimoineDTO = patrimoineService.findById(id);
+        if (patrimoineDTO != null) {
+            return new ResponseEntity<>(patrimoineDTO, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
