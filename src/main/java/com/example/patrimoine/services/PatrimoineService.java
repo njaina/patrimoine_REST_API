@@ -2,19 +2,26 @@ package com.example.patrimoine.services;
 
 import com.example.patrimoine.dto.PatrimoineDTO;
 import com.example.patrimoine.entity.PatrimoineEntity;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PatrimoineService {
 
     private static final String DATA_FOLDER =
         "src/main/java/com/example/patrimoine/data";
-    private static final String DATA_FILE = DATA_FOLDER + "/patrimoines.txt";
+    private static final String DATA_FILE = DATA_FOLDER + "/patrimoines.json";
     private Map<Integer, PatrimoineEntity> patrimoineMap = new HashMap<>();
+    private ObjectMapper objectMapper;
 
     public PatrimoineService() {
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule()); // Registering the JavaTimeModule
         File folder = new File(DATA_FOLDER);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -28,7 +35,7 @@ public class PatrimoineService {
         patrimoine.setPossesseur(patrimoineDTO.getPossesseur());
         patrimoine.setDerniereModification(LocalDateTime.now());
         patrimoineMap.put(id, patrimoine);
-        writeDataToFile(patrimoine);
+        writeDataToFile();
         return patrimoine;
     }
 
@@ -43,20 +50,12 @@ public class PatrimoineService {
         return null;
     }
 
-    private void writeDataToFile(PatrimoineEntity patrimoine) {
-        try (
-            BufferedWriter writer = new BufferedWriter(
-                new FileWriter(DATA_FILE, true)
-            )
-        ) {
-            writer.write(
-                patrimoine.getId() +
-                "," +
-                patrimoine.getPossesseur() +
-                "," +
-                patrimoine.getDerniereModification()
+    private void writeDataToFile() {
+        try {
+            objectMapper.writeValue(
+                new File(DATA_FILE),
+                patrimoineMap.values()
             );
-            writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,20 +69,12 @@ public class PatrimoineService {
                 return;
             }
 
-            try (
-                BufferedReader reader = new BufferedReader(new FileReader(file))
-            ) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",");
-                    PatrimoineEntity patrimoine = new PatrimoineEntity();
-                    patrimoine.setId(Integer.parseInt(parts[0]));
-                    patrimoine.setPossesseur(parts[1]);
-                    patrimoine.setDerniereModification(
-                        LocalDateTime.parse(parts[2])
-                    );
-                    patrimoineMap.put(patrimoine.getId(), patrimoine);
-                }
+            List<PatrimoineEntity> list = objectMapper.readValue(
+                file,
+                new TypeReference<List<PatrimoineEntity>>() {}
+            );
+            for (PatrimoineEntity patrimoine : list) {
+                patrimoineMap.put(patrimoine.getId(), patrimoine);
             }
         } catch (IOException e) {
             e.printStackTrace();
