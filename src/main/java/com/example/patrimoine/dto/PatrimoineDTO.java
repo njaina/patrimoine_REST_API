@@ -1,20 +1,11 @@
-package com.example.patrimoine.entity;
+package com.example.patrimoine.dto;
 
 import java.time.LocalDateTime;
 
-public class PatrimoineEntity {
+public class PatrimoineDTO {
 
-    private int id;
     private String possesseur;
     private LocalDateTime derniereModification;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getPossesseur() {
         return possesseur;
